@@ -47,7 +47,7 @@
         resolve(!!ok);
       }
       var timer = setTimeout(function () {
-        done(video.readyState >= 2 && !video.paused);
+        done(video.readyState >= 2);
       }, timeout);
 
       function armed() {
@@ -138,10 +138,11 @@
       return tex;
     }
 
-    function ensureSlot(slot, index) {
+    function ensureSlot(slot, index, hold) {
       var v = slots[slot];
       var src = videos[index];
-      if (slotClip[slot] !== index || v.getAttribute("src") !== src) {
+      var changed = slotClip[slot] !== index || v.getAttribute("src") !== src;
+      if (changed) {
         slotClip[slot] = index;
         try { v.pause(); } catch (e) {}
         v.src = src;
@@ -150,13 +151,31 @@
           textures[slot].dispose();
           textures[slot] = null;
         }
+      } else if (v.readyState >= 2 && textures[slot] && (hold ? v.paused : !v.paused)) {
+        return Promise.resolve(true);
       }
       return waitForFrame(v).then(function (ok) {
         if (!ok) return false;
         if (!textures[slot]) textures[slot] = makeTexture(v);
         textures[slot].needsUpdate = true;
+        if (hold) {
+          // Держим следующий ролик на начале, пока не пора собирать картинку.
+          try { v.pause(); } catch (e) {}
+          try { v.currentTime = 0; } catch (e2) {}
+        }
         return true;
       });
+    }
+
+    function playFromStart(video) {
+      var start = function () {
+        try { video.currentTime = 0; } catch (e) {}
+        var p;
+        try { p = video.play(); } catch (e2) { p = null; }
+        if (p && typeof p.catch === "function") p.catch(function () {});
+      };
+      if (video.readyState >= 1) start();
+      else video.addEventListener("loadedmetadata", start, { once: true });
     }
 
     function createOffsetArray(amplitude) {
@@ -195,9 +214,11 @@
 
       var nextIndex = (currentIndex + 1) % videos.length;
       var nextSlot = 1 - shown;
+      var leadIn = opts.leadIn != null ? opts.leadIn : 1;
 
-      // Ждём, пока следующий ролик реально играет и отдал кадр — и только потом разлёт.
-      return ensureSlot(nextSlot, nextIndex).then(function (ready) {
+      // Следующий ролик уже в буфере и стоит на нуле. Играть он начнёт
+      // за секунду до сборки, чтобы после перехода не быть далеко от начала.
+      return ensureSlot(nextSlot, nextIndex, true).then(function (ready) {
         if (!ready || !textures[nextSlot] || busy) return false;
         return new Promise(function (resolve) {
           requestAnimationFrame(function () {
@@ -206,8 +227,76 @@
             phase = "explode";
             publish();
 
+            var nextVideo = slots[nextSlot];
+            var leadMs = Math.max(0, (duration - leadIn) * 1000);
+            var leadFired = false;
+            var leadTimer = setTimeout(function () {
+              leadFired = true;
+              if (shown === nextSlot) return;
+              try { if (nextVideo.currentTime > 0.35) nextVideo.currentTime = 0; } catch (e) {}
+              var p;
+              try { p = nextVideo.play(); } catch (e2) { p = null; }
+              if (p && typeof p.catch === "function") p.catch(function () {});
+            }, leadMs);
+
             var offsets = createOffsetArray(amplitude);
             var state = { t: 0 };
+            var exploded = false;
+            var waits = 0;
+            function finishExplode() {
+              if (exploded) return;
+              if (!leadFired && nextVideo.paused) {
+                var p;
+                try { p = nextVideo.play(); } catch (e) { p = null; }
+                if (p && typeof p.catch === "function") p.catch(function () {});
+              }
+              // Не подменяем картинку, пока ролик не проиграл около секунды и кадр уже есть.
+              if ((nextVideo.currentTime < 0.85 || nextVideo.readyState < 2) && waits < 6) {
+                waits++;
+                setTimeout(finishExplode, 250);
+                return;
+              }
+              exploded = true;
+              clearTimeout(fallbackTimer);
+              gsap.killTweensOf(mat);
+              gsap.killTweensOf(state);
+              mat.map = textures[nextSlot];
+              mat.needsUpdate = true;
+              shown = nextSlot;
+              currentIndex = nextIndex;
+              phase = "assemble";
+              publish();
+
+              gsap.to(mat, { opacity: 1, duration: 0.8, ease: "power2.inOut" });
+              var restore = { r: 0 };
+              var gathered = false;
+              function finishGather() {
+                if (gathered) return;
+                gathered = true;
+                phase = "play";
+                busy = false;
+                publish();
+                var hidden = 1 - shown;
+                var upcoming = (currentIndex + 1) % videos.length;
+                ensureSlot(hidden, upcoming, true);
+                resolve(true);
+              }
+              gsap.to(restore, {
+                r: 1,
+                duration: 0.9,
+                ease: "power2.inOut",
+                onUpdate: function () {
+                  var r = restore.r;
+                  var pos = positionAttr.array;
+                  for (var k = 0; k < pos.length; k++) pos[k] = origPositions[k] + offsets[k] * (1 - r);
+                  positionAttr.needsUpdate = true;
+                },
+                onComplete: finishGather
+              });
+              setTimeout(finishGather, 1200);
+            }
+            var fallbackTimer = setTimeout(finishExplode, (duration + 0.35) * 1000);
+
             gsap.killTweensOf(mat);
             gsap.to(mat, { opacity: 0, delay: fadeDelay, duration: 1.6, ease: "power2.out" });
 
@@ -221,39 +310,7 @@
                 for (var k = 0; k < pos.length; k++) pos[k] = origPositions[k] + offsets[k] * t;
                 positionAttr.needsUpdate = true;
               },
-              onComplete: function () {
-                // Пик разлёта: частицы ещё в облаке, текстура уже следующего ролика.
-                gsap.killTweensOf(mat);
-                mat.map = textures[nextSlot];
-                mat.needsUpdate = true;
-                shown = nextSlot;
-                currentIndex = nextIndex;
-                phase = "assemble";
-                publish();
-
-                gsap.to(mat, { opacity: 1, duration: 0.8, ease: "power2.inOut" });
-                var restore = { r: 0 };
-                gsap.to(restore, {
-                  r: 1,
-                  duration: 0.9,
-                  ease: "power2.inOut",
-                  onUpdate: function () {
-                    var r = restore.r;
-                    var pos = positionAttr.array;
-                    for (var k = 0; k < pos.length; k++) pos[k] = origPositions[k] + offsets[k] * (1 - r);
-                    positionAttr.needsUpdate = true;
-                  },
-                  onComplete: function () {
-                    phase = "play";
-                    busy = false;
-                    publish();
-                    var hidden = 1 - shown;
-                    var upcoming = (currentIndex + 1) % videos.length;
-                    ensureSlot(hidden, upcoming);
-                    resolve(true);
-                  }
-                });
-              }
+              onComplete: finishExplode
             });
           });
         });
@@ -276,7 +333,7 @@
       renderer.render(scene, camera);
     })();
 
-    ensureSlot(0, 0).then(function (ok) {
+    ensureSlot(0, 0, false).then(function (ok) {
       if (!ok) return;
       mat.map = textures[0];
       mat.opacity = 1;
@@ -285,7 +342,7 @@
       currentIndex = 0;
       phase = "play";
       publish();
-      ensureSlot(1, 1);
+      ensureSlot(1, 1, true);
       if (opts.auto !== false) {
         var first = opts.firstDelay != null ? opts.firstDelay : 12000;
         var gapMin = opts.intervalMin != null ? opts.intervalMin : 45000;
@@ -307,14 +364,14 @@
     window.wy_set_video = function (index) {
       index = ((index % videos.length) + videos.length) % videos.length;
       var slot = shown;
-      return ensureSlot(slot, index).then(function (ok) {
+      return ensureSlot(slot, index, false).then(function (ok) {
         if (!ok) return false;
         mat.map = textures[slot];
         mat.needsUpdate = true;
         currentIndex = index;
         phase = "play";
         publish();
-        ensureSlot(1 - slot, (index + 1) % videos.length);
+        ensureSlot(1 - slot, (index + 1) % videos.length, true);
         return true;
       });
     };

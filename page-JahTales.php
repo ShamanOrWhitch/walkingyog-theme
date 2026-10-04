@@ -97,20 +97,15 @@ html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:Arial
 }
 .thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
 
-/* jah doll canvas style (over video) */
+/* куколка на всю сцену: клики мимо неё проходят к кнопкам и превью */
 .jah-doll-canvas {
   position:absolute;
-  right:18px;
-  bottom:18px;
-  width:220px;
-  height:360px;
-  pointer-events:auto;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
   touch-action:none;
-  cursor:grab;
-  z-index:55;
-  opacity:0.95;
-  mix-blend-mode:screen;
-  border-radius:6px;
+  z-index:50;
   background:transparent;
 }
 
@@ -120,7 +115,6 @@ html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:Arial
   .side-panel{ width:95vw; flex-direction:row; max-height:none; overflow-x:auto; padding:6px; gap:8px; }
   .thumb{ width:160px; height:90px; flex:0 0 auto; }
   .jah-wrap{ width:95vw; height:56.25vw; max-height:60vh; border-radius:10px; }
-  .jah-doll-canvas { right:12px; bottom:12px; width:140px; height:220px; }
 }
 
 /* overlay controls for fullscreen manual Prev/Next */
@@ -172,14 +166,11 @@ body.jah-lock-scroll{ overflow:hidden; }
   <div class="jah-wrap" id="jahWrap">
     <div class="jah-info" id="jahInfo">Jah Tales</div>
 
-    <video id="mainVideo" playsinline preload="auto" muted crossorigin="anonymous">
+    <video id="mainVideo" playsinline preload="auto" crossorigin="anonymous">
       <!-- стартовый src можно менять -->
       <source src="https://walkingyog.com/wp-content/uploads/2025/11/30Сек43-1.mp4" type="video/mp4">
       Ваш браузер не поддерживает видео.
     </video>
-
-    <!-- canvas куколки -->
-    <canvas id="jahDoll" class="jah-doll-canvas" width="440" height="720" aria-hidden="true"></canvas>
 
     <div class="controls-row" role="region" aria-label="Player controls">
       <button class="ctrl-btn" id="btnPrev" title="Previous">⟵ Prev</button>
@@ -188,7 +179,7 @@ body.jah-lock-scroll{ overflow:hidden; }
       <button class="ctrl-btn" id="btnRepeat" title="Repeat">Repeat: OFF</button>
       <button class="ctrl-btn" id="btnShuffle" title="Shuffle">Shuffle: OFF</button>
 
-      <button class="ctrl-btn" id="btnMute" title="Mute/Unmute">Mute</button>
+      <button class="ctrl-btn" id="btnMute" title="Включить звук">Sound: OFF</button>
       <button class="ctrl-btn" id="btnFS" title="Fullscreen">Fullscreen</button>
 
       <label for="speedCtrl">Speed</label>
@@ -249,6 +240,8 @@ body.jah-lock-scroll{ overflow:hidden; }
     </div>
 
   </div>
+
+  <canvas id="jahDoll" class="jah-doll-canvas" aria-hidden="true"></canvas>
 </div>
 
 <!-- подключаем p2.js из папки темы (положи p2.min.js в /wp-content/themes/your-theme/js/) -->
@@ -318,8 +311,32 @@ document.addEventListener('DOMContentLoaded', function () {
     for(const k in map) el.style[k] = map[k];
   }
 
-  // volume fade helper
+  // Сначала всегда тихо. Один клик включает звук и сразу играет.
+  let soundOn = false;
+  function applySound(){
+    main.defaultMuted = !soundOn;
+    main.muted = !soundOn;
+    if(soundOn){
+      main.removeAttribute('muted');
+      if(main.volume < 0.15) main.volume = 1;
+      const p = main.play();
+      if(p && p.catch) p.catch(()=>{});
+      btnMute.textContent = 'Sound: ON';
+    } else {
+      main.setAttribute('muted','');
+      btnMute.textContent = 'Sound: OFF';
+    }
+  }
+  function setSound(on){
+    soundOn = !!on;
+    clearInterval(fadeVolume._timer);
+    if(soundOn) main.volume = 1;
+    applySound();
+  }
+
+  // volume fade helper — только когда звук уже включён пользователем
   function fadeVolume(target, duration = FADE_VOLUME_MS){
+    if(!soundOn) return;
     const start = +main.volume;
     const diff = target - start;
     const steps = 50;
@@ -347,9 +364,10 @@ document.addEventListener('DOMContentLoaded', function () {
   main.load();
   preloadNexts(0);
 
-  // autoplay muted, then user can unmute
-  main.muted = true;
+  // autoplay без звука; пользователь включает его одним нажатием
+  setSound(false);
   main.play().catch(()=>{ /* autoplay may be blocked on some devices */ });
+  main.addEventListener('loadeddata', applySound);
 
   // update progress bar
   main.addEventListener('timeupdate', ()=> {
@@ -365,12 +383,10 @@ document.addEventListener('DOMContentLoaded', function () {
     speedLabel.textContent = main.playbackRate.toFixed(2) + 'x';
   });
 
-  // mute toggle
-  btnMute.addEventListener('click', ()=> {
-    main.muted = !main.muted;
-    btnMute.textContent = main.muted ? 'Muted' : 'Unmuted';
-    // if unmuted and volume 0, set to a sensible level
-    if(!main.muted && main.volume === 0) main.volume = 0.8;
+  btnMute.addEventListener('click', (e)=> {
+    e.preventDefault();
+    e.stopPropagation();
+    setSound(!soundOn);
   });
 
   // repeat toggle
@@ -576,10 +592,6 @@ document.addEventListener('DOMContentLoaded', function () {
   btnShuffle.textContent = 'Shuffle: OFF';
   speedLabel.textContent = main.playbackRate.toFixed(2) + 'x';
   fsControls.style.display = 'none';
-  progressBar.style.width = '0%';
-
-  // ensure we have decent volume default when user unmutes
-  main.volume = 1.0;
 
   // Preload initial 2 next videos
   preloadNexts(currentIndex);
