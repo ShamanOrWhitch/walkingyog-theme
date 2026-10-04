@@ -1,0 +1,842 @@
+body, {
+#slider,
+.wrap,
+.slide-content {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+}
+#bg-videos video {
+    position:absolute !important;
+    top:50% !important;
+    left:50% !important;
+    transform:translate(-50%, -50%) !important;
+
+    width:100% !important;
+    height:auto !important;
+
+    max-height:100vh !important;
+    max-width:100vw !important;
+
+    object-fit:contain !important;
+    background:#000;
+}
+
+.wrap {
+  position: relative;
+}
+
+.slide {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.slide1 {
+  background-image: url("https://static.pexels.com/photos/302889/pexels-photo-302889.jpeg");
+}
+.slide2 {
+  background-image: url("https://static.pexels.com/photos/302892/pexels-photo-302892.jpeg");
+}
+.slide3 {
+  background-image: url("https://static.pexels.com/photos/226633/pexels-photo-226633.jpeg");
+}
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.slide-content span {
+  font-size: 5rem;
+  color: #fff;
+}
+
+.arrow {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  margin-top: -35px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+#arrow-left {
+  border-width: 30px 40px 30px 0;
+  border-color: transparent #fff transparent transparent;
+  left: 0;
+  margin-left: 30px;
+}
+
+#arrow-right {
+  border-width: 30px 0 30px 40px;
+  border-color: transparent transparent transparent #fff;
+  right: 0;
+  margin-right: 30px;
+}
+
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='contact-form-7-css'  href='http://namaste.webzakt.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.2' type='text/css' media='all' />
+<link rel='stylesheet' id='woocommerce-layout-css'  href='http://namaste.webzakt.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=3.4.3' type='text/css' media='all' />
+<link rel='stylesheet' id='woocommerce-smallscreen-css'  href='http://namaste.webzakt.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=3.4.3' type='text/css' media='only screen and (max-width: 768px)' />
+<style id='woocommerce-inline-inline-css' type='text/css'>
+.woocommerce form .form-row .required { visibility: visible; }
+</style>
+<link rel='stylesheet' id='give-styles-css'  href='http://namaste.webzakt.com/wp-content/plugins/give/assets/dist/css/give.css?ver=2.1.6' type='text/css' media='all' />
+<link rel='stylesheet' id='bootstrap-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/bootstrap.min.css?ver=4.9.7' type='text/css' media='screen, all' />
+<link rel='stylesheet' id='flexslider-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/flexslider.css?ver=4.9.7' type='text/css' media='screen, all' />
+<link rel='stylesheet' id='owl-carousel-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/owl-carousel.css?ver=4.9.7' type='text/css' media='screen, all' />
+<link rel='stylesheet' id='prettyphoto-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/prettyPhoto.css?ver=4.9.7' type='text/css' media='screen, all' />
+<link rel='stylesheet' id='fontawesome-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/font-awesome.min.css?ver=4.4.0' type='text/css' media='all' />
+<link rel='stylesheet' id='animate-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/animate.min.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-woocommerce-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/css/woocommerce.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-main-css-css'  href='http://namaste.webzakt.com/wp-content/themes/namaste/style.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-ext-breadcrumbs-add-css-css'  href='http://namaste.webzakt.com/wp-content/plugins/unyson/framework/extensions/breadcrumbs/static/css/style.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-ext-builder-frontend-grid-css'  href='http://namaste.webzakt.com/wp-content/plugins/unyson/framework/extensions/builder/static/css/frontend-grid.css?ver=1.2.10' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-ext-forms-default-styles-css'  href='http://namaste.webzakt.com/wp-content/plugins/unyson/framework/extensions/forms/static/css/frontend.css?ver=2.7.18' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='http://namaste.webzakt.com/wp-content/plugins/unyson/framework/static/libs/font-awesome/css/font-awesome.min.css?ver=2.7.18' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-section-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/section/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-call-to-action-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/call-to-action/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-spacer-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/spacer/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-heading-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/heading/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-subtext-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/subtext/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-icon-box-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/icon-box/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-heading-2-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/heading-2/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-shortcode-button-css'  href='http://namaste.webzakt.com/wp-content/plugins/unyson/framework/extensions/shortcodes/shortcodes/button/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-separator-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/separator/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-image-box-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/image-box/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-member-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/member/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-quote-carousel-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/quote-carousel/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<link rel='stylesheet' id='namaste-big-heading-shortcode-css'  href='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/big-heading/static/css/styles.css?ver=4.9.7' type='text/css' media='all' />
+<script type='text/javascript' src='http://namaste.webzakt.com/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='http://namaste.webzakt.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var give_global_vars = {"ajaxurl":"http:\/\/namaste.webzakt.com\/wp-admin\/admin-ajax.php","checkout_nonce":"c6855edc47","currency":"USD","currency_sign":"$","currency_pos":"before","thousands_separator":",","decimal_separator":".","no_gateway":"Please select a payment method.","bad_minimum":"The minimum custom donation amount for this form is","bad_maximum":"The maximum custom donation amount for this form is","general_loading":"Loading...","purchase_loading":"Please Wait...","number_decimals":"0","give_version":"2.1.6","magnific_options":{"main_class":"give-modal","close_on_bg_click":false},"form_translation":{"payment-mode":"Please select payment mode.","give_first":"Please enter your first name.","give_email":"Please enter a valid email address.","give_user_login":"Invalid username. Only lowercase letters (a-z) and numbers are allowed.","give_user_pass":"Enter a password.","give_user_pass_confirm":"Enter the password confirmation.","give_agree_to_terms":"You must agree to the terms and conditions."},"confirm_email_sent_message":"Please check your email and click on the link to access your complete donation history.","ajax_vars":{"ajaxurl":"http:\/\/namaste.webzakt.com\/wp-admin\/admin-ajax.php","ajaxNonce":"a25f2db904","loading":"Loading","select_option":"Please select an option","default_gateway":"manual","permalinks":"1","number_decimals":0}};
+var giveApiSettings = {"root":"http:\/\/namaste.webzakt.com\/wp-json\/give-api\/v2\/","rest_base":"give-api\/v2"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://namaste.webzakt.com/wp-content/plugins/give/assets/dist/js/give.js?ver=2.1.6'></script>
+<script type='text/javascript' src='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/section/static/js/section.js?ver=4.9.7'></script>
+<script type='text/javascript' src='http://namaste.webzakt.com/wp-content/plugins/namaste-pro-features//extensions/shortcodes/shortcodes/member/static/js/member.js?ver=4.9.7'></script>
+<link rel='https://api.w.org/' href='http://namaste.webzakt.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://namaste.webzakt.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://namaste.webzakt.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 4.9.7" />
+<meta name="generator" content="WooCommerce 3.4.3" />
+<link rel="canonical" href="http://namaste.webzakt.com/" />
+<link rel='shortlink' href='http://namaste.webzakt.com/' />
+<link rel="alternate" type="application/json+oembed" href="http://namaste.webzakt.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fnamaste.webzakt.com%2F" />
+<link rel="alternate" type="text/xml+oembed" href="http://namaste.webzakt.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fnamaste.webzakt.com%2F&#038;format=xml" />
+<meta name="generator" content="Give v2.1.6" />
+<script>
+	(function (i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		i[r] = i[r] || function () {
+			(i[r].q = i[r].q || []).push(arguments)
+		}, i[r].l = 1 * new Date();
+		a = s.createElement(o),
+			m = s.getElementsByTagName(o)[0];
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m)
+	})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+	ga('create', 'UA-73776074-1', 'auto');
+	ga('send', 'pageview');
+
+</script>	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
+	<style type="text/css" id="custom-background-css">
+body.custom-background { background-image: url("http://namaste.webzakt.com/wp-content/themes/namaste/images/dotnoise-light-grey.png"); background-position: center top; background-size: auto; background-repeat: repeat; background-attachment: scroll; }
+</style>
+<title></title>
+<link rel="icon" href="http://namaste.webzakt.com/wp-content/uploads/2016/02/cropped-favic-150x150.png" sizes="32x32" />
+<link rel="icon" href="http://namaste.webzakt.com/wp-content/uploads/2016/02/cropped-favic-300x300.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="http://namaste.webzakt.com/wp-content/uploads/2016/02/cropped-favic-180x180.png" />
+<meta name="msapplication-TileImage" content="http://namaste.webzakt.com/wp-content/uploads/2016/02/cropped-favic-300x300.png" />
+<style type="text/css">
+
+body {
+	background-color: #eeebd5 !important;
+}
+
+header #top {
+	background-image: url('');
+}
+
+#top {
+    background-color: #222222 !important;
+}
+
+#outerfooter, #footerholder .menu-social ul li {
+    background-color: #222222 !important;
+}
+
+#headernav ul ul a, #headernav .mega-menu ul li {
+	width: 15em;
+}
+</style>
+ 
+<style>
+#maincontent {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+</style> 
+ 
+
+<style type="text/css">
+
+/* THEME COLORS */
+
+/* Color 1 */
+
+input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, #top, .logo-subtitle, .site-title a, .post-single-categories a:hover, .wpcf7 input[type=submit],  .wpcf7 textarea, #footer a:hover, .copyrighttext, #outerfootersidebar .widget_namaste_contactwidget .contact-icon, #outerfootersidebar a, #sidebar a:hover, .widget-title, .entry-utility a:hover, .button:visited, input[type="submit"],  input[type="reset"], input[type="button"], button, .breadcrumbs-page, .menu-social li a, #donate-button .btn, .site-title a:hover, a.pp_close, div.pp_default .pp_description, div.pp_default .pp_nav .currentTextHolder, div.pp_default .pp_content a, code, .com-link a, .com-reply a, .schedule-title, .organizer-title, .schedule-icon-box, .back-to-top-content, .pro-slider-mandala .pro-slider-h, .pro-slider-mandala i
+{
+	color: #e3ae3a;
+}
+
+.read-more .btn, #footernav a:hover, .breadcrumbs a:hover, .namaste-pro-slider .nivo-directionNav a
+{
+    color: #e3ae3a !important;
+}
+
+input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, .post-navigation, .post-single-title, .widget_search .searchform, .widget_product_search .searchform, .content-404 .searchform, .tagcloud a, .wpcf7 input[type=submit], .wpcf7 textarea, .wpcf7 input[type="text"], .wpcf7 input[type="email"], .wpcf7 input[type="password"], .event-ticket, .entry-utility, .read-more:hover, .button:visited, input[type="submit"],input[type="reset"], input[type="button"], #donate-button:hover, button, blockquote, select
+{
+	border-color:#e3ae3a;
+}
+
+.gallery .gallery-item .gallery-icon img, .iframe-holder, .single-post-image-holder, .widget_search .searcharea, .widget_product_search .searcharea, .content-404 .searcharea, .wpcf7 input[type=submit]:hover, .tagcloud a:hover, .event-map .fw-map, .flexslider .flex-direction-nav a:hover, .flexslider .flex-direction-nav a, .read-more .btn:hover, input[type="submit"]:hover,input[type="reset"]:hover, input[type="button"]:hover, button:hover, #headernav ul li:hover > .mega-menu, #headernav ul ul, #headernav, #donate-button:hover .btn, #donate-button, .read-more, .com-reply, .com-link a:hover, .com-reply a:hover, .event-schedule, .event-organizer, .back-to-top-holder, .widget_namaste_flickrwidget .flickr_badge_image
+{
+	background-color: #e3ae3a;
+}
+
+.pagination .current, .pagination a:hover, .woocommerce nav.woocommerce-pagination ul li a:focus, .woocommerce nav.woocommerce-pagination ul li a:hover, .woocommerce nav.woocommerce-pagination ul li span.current
+{
+	box-shadow: 0 0 0 30px #e3ae3a inset;
+}
+
+/* Color 2 */
+
+div.pp_default #pp_full_res .pp_inline,div.light_rounded .pp_content .ppt,div.light_rounded #pp_full_res .pp_inline,div.light_square .pp_content .ppt,div.light_square #pp_full_res .pp_inline,div.facebook .pp_content .ppt,div.facebook #pp_full_res .pp_inline, a, .morelink, .colortext, a.colortext, .post-single-title, .wpcf7 input[type=submit]:hover, .wpcf7 input[type="text"], .wpcf7 input[type="email"], .wpcf7 input[type="password"], .entry-tag, .entry-utility, input[type="submit"]:hover,input[type="reset"]:hover, input[type="button"]:hover, button:hover, #headernav ul ul a, #headernav ul ul, #headernav a, #donate-button:hover .btn, .searcharea button, .searcharea .search-submit, body, .widget_calendar #wp-calendar caption, .com-link a:hover, .com-reply a:hover
+{
+	color: #222222;
+}
+
+.searcharea input[placeholder], .searcharea input[type="search"], .tagcloud a:hover, .read-more .btn:hover
+{
+	color: #222222 !important;
+}
+
+div.pp_default .pp_content,div.light_rounded .pp_content, div.pp_overlay, div.dark_square .pp_left,div.dark_square .pp_middle,div.dark_square .pp_right,div.dark_square .pp_content, div.pp_default .pp_bottom .pp_left, div.pp_default .pp_bottom .pp_middle, div.pp_default .pp_bottom .pp_right, div.pp_default .pp_content_container .pp_right, div.pp_default .pp_content_container .pp_left, div.pp_default .pp_top .pp_left, div.pp_default .pp_top .pp_middle, div.pp_default .pp_top .pp_right, .wpcf7 input[type=submit], #outerfooter, #outerfootersidebar, .read-more .btn, .read-more:hover, .button:visited, input[type="submit"],input[type="reset"], input[type="button"], button, #donate-button .btn, #top, #footerholder .menu-social ul li, code, #donate-button:hover, .com-link a, .com-reply a
+{
+	background-color: #222222;
+}
+
+.single-post-image-holder, .widget-thumb, .wpcf7 input[type=submit]:hover, #outerfootersidebar, .flexslider .flex-direction-nav a, input[type="submit"]:hover,input[type="reset"]:hover, input[type="button"]:hover, button:hover, .breadcrumbs, #top-search .searchform .searcharea, #headernav ul li:hover > .mega-menu, #headernav ul ul, #headernav, #donate-button, .read-more, #outerfooter, .com-reply
+{
+	border-color: #222222;	
+}
+
+.widget-title, .breadcrumbs, .pro-slider-textarea
+{
+    text-shadow: 0px 1px 1px #222222;
+}
+
+.breadcrumbs-page, .site-title a:hover, .pro-slider-mandala .pro-slider-h, .pro-slider-mandala i {
+    text-shadow: 1px 2px 1px #222222;
+}
+
+#headernav {
+    box-shadow: 0px 3px 10px 0px #222222;
+    -moz-box-shadow:0px 3px 10px 0px #222222;
+    -ms-box-shadow: 0px 3px 10px 0px #222222;
+    -o-box-shadow: 0px 3px 10px 0px #222222;
+    -webkit-box-shadow: 0px 3px 10px 0px #222222;
+}
+
+body ::-webkit-input-placeholder{
+   color: #222222;
+}
+body :-moz-placeholder{
+   color: #222222;
+}
+body ::-moz-placeholder{
+   color: #222222;
+}
+body :-ms-input-placeholder {
+   color: #222222;
+}
+
+/* Color 3 */
+
+a:hover, a.colortext:hover, .colortext a:hover, .morelink:hover, .post-single-categories a, #sidebar a, .widget_namaste_contactwidget .contact-icon, .ticket-title, .details-event li, #respond label, #respond .required, h3#comments-title, h3#reply-title, .entry-utility a, #top-search .searchform .searcharea, #headernav ul ul .current_page_parent, #headernav .current_page_parent .current_page_item > a, #headernav .current_page_ancestor > a, #headernav .current_page_item > a, #headernav .current-menu-item > a, #headernav .current_page_item > a:hover, #headernav .current-menu-item > a:hover, #headernav ul ul a:hover, #headernav li:hover > a, a:hover, a:focus, a:active, .comment-body .fn, .newsletter-title, .schedule-point, .organizer-point, .woocommerce nav.woocommerce-pagination ul li a:focus, .woocommerce nav.woocommerce-pagination ul li a:hover, .woocommerce nav.woocommerce-pagination ul li span.current
+{
+	color: #7C2E00;
+}
+
+.widget_search .searchform, .widget_product_search .searchform, .content-404 .searchform, .tagcloud a, .event-map .fw-map-canvas, .schedule-title, .organizer-title, .schedule-icon-box, .back-to-top-content 
+{
+	background-color: #7C2E00;
+}
+
+.gallery .gallery-item .gallery-icon img, .iframe-holder, .tagcloud a:hover, .event-map .fw-map, .avatar, #headernav .header-simple .current_page_item, #headernav .header-simple .current-menu-item, #headernav .header-simple .current-menu-ancestor, #headernav .header-simple .current-menu-parent, .event-schedule, .event-organizer, .back-to-top-holder, .widget_namaste_flickrwidget .flickr_badge_image
+{
+	border-color: #7C2E00;
+}
+
+/* Color 4 */
+
+div.pp_default .pp_content a:hover, #footer a, #footer a:visited, #footersidebarcontainer, #outerfootersidebar .widget_namaste_popularwidget .post-date, #outerfootersidebar a:hover, .pro-slider-mandala p
+{
+	color:#FFDB8C;
+}
+
+/* Color 5 */
+
+.breadcrumbs a, .breadcrumbs, .tagcloud a
+{
+	color: #fff !important;
+}
+
+</style>
+
+<style>
+
+/* PLUGIN COLORS */
+
+/* Color 1 */
+
+input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, .main-button .btn, .namaste-box-shortcode-1, .blockquote-2-content, .blockquote-2-author, .namaste-map-contacts a:hover, .fw-tabs-container, .namaste-toggle, .toggle .active a, .toggle:hover a, .toggle a:hover, .toggle a:focus, .toggle a:active, .member-info h3, .member-info p, .member-content, .donate-form label, .donate-form-light .main-button:hover .btn, .namaste-action-call .title, .action-call-item.square.action-call-effect.colored .info h3, .post-2-content .entry-title:hover, .post-2-button .btn, .popular-post-shortcode .post-title-holder a, .post-with-frame .post-with-frame-title .title, .events-inner, .eventinfos a:hover, .portfolio-filters ul li a, figure.portfolio-effect .h2-holder, figure.portfolio-effect .p-holder, a:hover .name, .iconbox-icon-holder, .imagebox .name:hover, .donate-form-light .donate-text, .donate-form-light .donate-info, .namaste-info-shortcode a, .event-carousel-content h3, .button-basic .btn, .button-inverse:hover .btn, .owl-navigation-dark .owl-prev, .owl-navigation-dark .owl-next, .owl-navigation-burgundy .owl-prev, .owl-navigation-burgundy  .owl-next, .pricing-column, .post-with-frame a, .member-content a .member-name:hover, .member-content li a:hover, .post-with-frame-excerpt, .post-with-frame-more, .pro-slider-textarea
+{
+	color: #e3ae3a;
+}
+
+body input[placeholder], .namaste-tab-holder .nav > li > a:hover, .namaste-tab-holder .nav-tabs > li.ui-tabs-active > a, .namaste-tab-holder .nav-tabs > li.ui-tabs-active > a:hover, .namaste-tab-holder .nav-tabs > li.ui-tabs-active > a:focus, .info-shortcode-items, .date-box, .namaste-custom-slider .namaste-slider-caption
+{
+    color: #e3ae3a !important;
+}
+
+input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, figure.image-special-effect .image-effect-text::before, .namaste-box-holder-2, .separator, .blockquote-1, .highlight, .heading h1, .heading h2, .heading h3, .heading h4, .heading h5, .heading h6, .bigtitle, .namaste-map-view .show-title, .namaste-map-contacts .title, .member-thumb, .progress-holder, .donate-form-light .main-button, .action-call-item.square.action-call-effect.top_to_bottom .text, .call-ribbon, .post-with-frame .post-with-frame-date-holder, .portfolio-filters ul li:hover, .portfolio-filters ul li.active, .main-button:hover, .post-2-button:hover, .namaste-info-shortcode, .button-basic:hover, .button-inverse, .pricing-featured .pricing-column-frame
+{
+	border-color: #e3ae3a;
+}
+
+.namaste-tab-holder .nav-tabs > li.ui-tabs-active > a, .namaste-tab-holder .nav-tabs > li.ui-tabs-active > a:hover, .namaste-tab-holder .nav-tabs > li.ui-tabs-active > a:focus, .toggle .active a, #owl-quote-namaste .quote-author-image {
+	border-color: #e3ae3a !important;
+}
+
+.main-button, .main-button:hover .btn, .image-effect, .section-layer, .namaste-box-holder-1, .namaste-box-shortcode-2, .blockquote-2-holder, .namaste-flexslider .flexslider, .namaste-flexslider .flexslider .flex-direction-nav a, .namaste-flexslider .flexslider .flex-direction-nav a:hover, .imagebox .image, #namaste-video-image:hover .video-image-holder:before, .namaste-tab-holder, .namaste-toggle-holder, .member-content-holder, .progress .fore .bar, .donate-form-light .main-button .btn, .namaste-action-call, .post-2-button, .post-2-button:hover .btn, .post-with-frame, .post-with-frame .post-with-frame-date, .events-holder, .portfolio-filters ul li, .portfolio-filters ul li a:hover, .portfolio-filters ul li.active a, figure.portfolio-effect .h2-holder, figure.portfolio-effect .p-holder, .call-ribbon-2, .namaste-book, .donate-form-light .main-button:hover, .info-shortcode-container:before, .namaste-info-shortcode .title, .button-basic, .button-basic:hover .btn, .button-inverse .btn, .button-inverse:hover, .pricing-column-frame, .pricing-price-holder, .pricing-featured .pricing-column, .date-box-holder, .event-content-image, .wrap-nivoslider.theme-default .nivo-controlNav a, .wrap-nivoslider.theme-default .nivo-directionNav a, .pro-slider-textarea-holder
+{
+	background-color: #e3ae3a;
+}
+
+.highlight-2, .namaste-custom-slider .namaste-slider-caption-holder
+{
+	background-color: #e3ae3a !important;	
+}
+
+.owl-theme .owl-controls .owl-page.active span,
+.owl-theme .owl-controls.clickable .owl-page:hover span
+{
+	box-shadow: 0 0 0 6px #e3ae3a inset;
+}
+
+.member-info 
+{
+	box-shadow: inset 0 0 0 2px #e3ae3a;
+}
+
+.post-with-frame .news-image 
+{
+    box-shadow: 0px 1px 0px #e3ae3a;
+}
+
+.owl-theme .owl-controls .owl-page.active span,
+.owl-theme .owl-controls.clickable .owl-page:hover span{
+	box-shadow: 0 0 0 6px #e3ae3a inset;
+}
+
+/* Color 2 */
+
+.main-button:hover .btn, .highlight-2, .namaste-map-view .show-title, .donate-info,.donate-form-light .main-button .btn, .namaste-action-call, .action-call-item.square.action-call-effect.top_to_bottom .text, .action-call-item.square.action-call-effect.top_to_bottom a:hover .text, .category-list a:hover, .post-shortcode .entry-title a, .post-2-button:hover .btn, .namaste-info-shortcode .title, .button-basic:hover .btn, .button-inverse .btn, .button-bw:hover .btn, .button-custom .btn, .owl-navigation-light .owl-prev, .owl-navigation-light .owl-next, .pricing-price, .price-description, .pricing-featured .pricing-column, .event-box-link a:hover, .event-content-description h3:hover, .event-more, .event-content-social li a:hover, .wrap-nivoslider.theme-default .nivo-directionNav a:hover
+{
+	color: #222222;
+}
+
+.image-effect, .namaste-flexslider .flexslider .flex-direction-nav a, .namaste-action-call, .post-shortcode .small-thumb-holder, .post-2-button, .main-button, .donate-form-light .main-button:hover, .info-triangle, .button-basic, .button-inverse:hover, .button-bw,.pricing-column-frame, .wrap-nivoslider.theme-default .nivo-directionNav a, .namaste-custom-slider .nivo-caption
+{
+    border-color: #222222;
+}
+
+.highlight-2, .namaste-custom-slider .namaste-slider-caption-holder
+{
+	border-color: #222222 !important;
+}
+
+.main-button .btn, #namaste-video-image .video-image-holder:after, .member-info, .progress-holder, .progress .fore, .donate-form-light .main-button, .donate-form-light .main-button:hover .btn, .action-call-container:before, .namaste-action-call .title, .action-call-item.square.action-call-effect.colored .info .info-back, .action-call-item.square.action-call-effect .info .info-back, .post-2-button .btn, .main-button:hover, .post-2-button:hover, .info-shortcode-items, .namaste-info-shortcode, .button-basic .btn, .button-basic:hover, .button-inverse, .button-inverse:hover .btn, .button-bw .btn, .button-bw:hover, .button-custom, .owl-navigation-dark .owl-prev, .owl-navigation-dark .owl-next, .pricing-column, .pricing-featured .pricing-column-frame, .pricing-featured .pricing-price-holder, figure.image-special-effect, .namaste-custom-slider .namaste-slider-caption
+{
+	background-color: #222222;
+}
+
+.namaste-pro-slider .nivo-directionNav a {
+	background-color: #222222 !important;
+}
+
+@media (max-width: 1170px) {
+	.namaste-info-shortcode {
+		background-color: #222222;
+	}
+}
+
+.blockquote-2-content, .blockquote-2-author, .fw-tabs-container, .namaste-toggle, .action-call-item.square.action-call-effect .info p, .post-with-frame .post-with-frame-date, .events-inner, .portfolio-filters ul li a, figure.portfolio-effect h2, .iconbox-icon-holder, .donate-form-light .donate-text, .donate-form-light .donate-info, .donate-form label
+{
+	text-shadow: 2px 2px 1px #222222;
+}
+
+.post-with-frame .post-with-frame-title .title, .image-effect-holder figure .image-effect-text, .namaste-box-shortcode-1, .member-content, .post-with-frame-more, .post-with-frame-excerpt
+{
+	text-shadow: 2px 1px 0px #222222;
+}
+
+.post-with-frame .post-with-frame-date, .post-with-frame .post-with-frame-date-holder
+{
+    box-shadow: 0px 0px 6px #222222;
+}
+
+.marquee-starts {
+    background: -webkit-gradient(linear, right center, left center, from(transparent), to(#222222));
+    background: -moz-linear-gradient(left center, #222222 0%, transparent 100%);
+    background: -o-linear-gradient(left, #222222, transparent);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#222222', EndColorStr='transparent');
+}
+
+.marquee-ends {
+    background: -webkit-gradient(linear, left center, right center, from(transparent), to(#222222));
+    background: -moz-linear-gradient(right center, #222222 0%, transparent 100%);
+    background: -o-linear-gradient(right, #222222, transparent);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#222222', EndColorStr='transparent');
+}
+
+/* Color 3 */
+
+.namaste-box-shortcode-2, .namaste-map-contacts a, .iconbox .name, .donate-text, .category-list a, .post-shortcode .entry-title a:hover, .post-shortcode .entry-meta a:hover, .post-2-content .meta-data, .portfolio-filters ul li a:hover, .portfolio-filters ul li.active a, .book-author, .imagebox .name, .icon-mandala-frame:before, .icon-mandala:before, .event-box-link a, #owl-quote-namaste .quote-author, #owl-quote-namaste .quote-content:before, .event-box a, .event-content-description h3, .event-more:hover, .event-content-social li a
+{
+    color: #7C2E00;  	
+}
+
+.namaste-box-shortcode-1, .namaste-box-holder-2, .blockquote-2, .highlight, .fw-tabs-container, .namaste-toggle, .member-content, .post-with-frame .item-inner, .events-inner, .portfolio-filters ul li a, .portfolio-filters ul li:hover, .portfolio-filters ul li.active, figure.portfolio-effect h2, figure.portfolio-effect p, .iconbox-icon-holder, .owl-navigation-burgundy .owl-prev, .owl-navigation-burgundy  .owl-next, .date-box, .pro-slider-textarea
+{  
+	background-color: #7C2E00; 	
+}
+
+.namaste-box-holder-1, .blockquote-2-holder, .namaste-flexslider .flexslider, .imagebox .image, .namaste-tab-holder, .namaste-toggle-holder, .member-content-holder, .post-with-frame, .events-holder, .portfolio-filters ul li, .portfolio-grid figure .portfolio-effect-img, figure.portfolio-effect .h2-holder, figure.portfolio-effect .p-holder, .namste-portfolio img, .namaste-book, .date-box-holder, .event-content-image
+{
+    border-color: #7C2E00;
+}
+
+.pro-slider-textarea-holder
+{
+    border-color: #7C2E00 !important;
+}
+
+.action-call-item.square.action-call-effect.colored .info h3 
+{
+	text-shadow: 1px 1px #7C2E00;
+}
+
+/* Color 4 */
+
+.namaste-tab-holder .nav > li > a, .toggle .toggle-arrow:after, .toggle a, .popular-post-shortcode .post-title-holder, .popular-post-shortcode .post-title-holder a:hover, .event-titles, .eventinfos a, .action-call-item.square.action-call-effect .info p, .namaste-info-shortcode a:hover, .pricing-featured .pricing-price, .pricing-featured .price-description, .member-name, .member-content li a
+{
+	color: #FFDB8C;
+}
+
+.post-with-frame a:hover
+{
+	color: #FFDB8C !important;
+}
+
+.member-info p
+{
+	border-color: #FFDB8C;
+}
+
+/* Color 5 */
+
+.button-bw, .button-bw:hover .btn, .owl-navigation-light .owl-prev, .owl-navigation-light .owl-next
+{
+    background-color: #fff;
+}
+
+.button-bw .btn
+{
+    color: #fff;
+}
+
+.button-bw:hover
+{
+    border-color: #fff;
+}
+
+</style>
+
+<style>
+
+/* WOOCOMMERCE COLORS */
+
+/* Color 1 */
+
+.woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce div.product .woocommerce-tabs ul.tabs li a, .woocommerce #respond input#submit, .woocommerce a.button, .woocommerce button.button, .woocommerce input.button, .woocommerce ul.products li.product .price, .woocommerce div.product p.price, .woocommerce div.product span.price, div.pp_woocommerce .pp_arrow_next, div.pp_woocommerce .pp_arrow_previous, div.pp_woocommerce .pp_close, div.pp_woocommerce .pp_next:before, div.pp_woocommerce .pp_previous:before, div.pp_woocommerce a.pp_contract, div.pp_woocommerce a.pp_expand, .currentTextHolder
+{
+	color: #e3ae3a !important;
+}
+
+.woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce div.product .woocommerce-tabs ul.tabs li, .woocommerce p.stars a.star-1, .woocommerce p.stars a.star-2, .woocommerce p.stars a.star-3, .woocommerce p.stars a.star-4, .woocommerce p.stars a.star-5, .woocommerce #respond input#submit, .woocommerce a.button, .woocommerce button.button, .woocommerce input.button
+{
+	border-color: #e3ae3a !important;
+}
+
+.woocommerce #respond input#submit.alt:hover, .woocommerce a.button.alt:hover, .woocommerce button.button.alt:hover, .woocommerce input.button.alt:hover, .woocommerce .quantity .qty, .woocommerce div.product .woocommerce-tabs ul.tabs li:hover, .woocommerce div.product .woocommerce-tabs ul.tabs li.active, .woocommerce #respond input#submit:hover, .woocommerce a.button:hover, .woocommerce button.button:hover, .woocommerce input.button:hover, .woocommerce #reviews #comments ol.commentlist li img.avatar, .woocommerce .widget_price_filter .ui-slider .ui-slider-handle,.woocommerce .widget_price_filter .ui-slider .ui-slider-range, .woocommerce span.onsale
+{
+	background-color: #e3ae3a !important;
+}
+
+/* Color 2 */
+
+.woocommerce #respond input#submit.alt:hover, .woocommerce a.button.alt:hover, .woocommerce button.button.alt:hover, .woocommerce input.button.alt:hover, .woocommerce div.product .woocommerce-tabs ul.tabs li:hover a, .woocommerce div.product .woocommerce-tabs ul.tabs li.active a, .woocommerce #respond input#submit:hover, .woocommerce a.button:hover, .woocommerce button.button:hover, .woocommerce input.button:hover, .woocommerce div.product form.cart .variations label, .pro-slider-mandala-yellow .pro-slider-h, .pro-slider-mandala-yellow i
+{
+	color: #222222 !important;
+}
+
+.woocommerce #respond input#submit.alt:hover, .woocommerce a.button.alt:hover, .woocommerce button.button.alt:hover, .woocommerce input.button.alt:hover, .woocommerce .quantity .qty, .woocommerce div.product .woocommerce-tabs ul.tabs li:hover, .woocommerce div.product .woocommerce-tabs ul.tabs li.active, .woocommerce #respond input#submit:hover, .woocommerce a.button:hover, .woocommerce button.button:hover, .woocommerce input.button:hover, .woocommerce #reviews #comments ol.commentlist li .comment-text, .woocommerce #reviews #comments ol.commentlist li img.avatar
+{
+	border-color: #222222 !important;
+}
+
+.woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce div.product .woocommerce-tabs ul.tabs li, .woocommerce #respond input#submit, .woocommerce a.button, .woocommerce button.button, .woocommerce input.button, .woocommerce .widget_price_filter .price_slider_wrapper .ui-widget-content, div.pp_woocommerce .pp_content_container
+{
+	background-color: #222222 !important;
+}
+
+/* Color 3 */
+
+.woocommerce a.remove, .woocommerce .widget_price_filter .price_slider_amount .price_label, .woocommerce form .form-row .required, .pro-slider-mandala-yellow p
+{
+	color: #7C2E00 !important;
+}
+
+.woocommerce a.remove:hover
+{
+	background-color: #7C2E00 !important;
+}
+
+.woocommerce .widget_shopping_cart .total, .woocommerce.widget_shopping_cart .total 
+{
+	border-color: #7C2E00 !important;
+}
+
+/* Color 5 */
+
+, .woocommerce span.onsale
+{
+	color: #fff !important;
+}
+
+.woocommerce ul.cart_list li img, .woocommerce ul.product_list_widget li img
+{
+    border-color: #fff !important;
+}
+
+.woocommerce ul.cart_list li img, .woocommerce ul.product_list_widget li img, .woocommerce .woocommerce-error, .woocommerce .woocommerce-info, .woocommerce .woocommerce-message, .woocommerce a.remove
+{
+    background-color: #fff !important;
+}
+
+</style>
+
+ 
+
+<style type="text/css">
+
+@import url(//fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700&subset=latin,latin-ext);@import url(//fonts.googleapis.com/css?family=Fondamento:400,400italic);@import url(//fonts.googleapis.com/css?family=Playfair+Display:400,700&subset=latin,latin-ext);
+/* THEME FONTS */
+
+/* Font 1 */
+
+h1, h2, h3, h4, h5, h6, input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, #donate-button .btn, #headernav, .breadcrumbs-page, .button:visited, input[type="submit"],input[type="reset"], input[type="button"], button, h3#comments-title, h3#reply-title, .comment-body .fn, #commentform textarea, #respond label, .ticket-title, .widget-title, .wpcf7 input[type="text"], .wpcf7 input[type="email"], .wpcf7 input[type="password"], .wpcf7 textarea, .wpcf7 input[type=submit], .post-single-title, .post-navigation-title, div.pp_default .pp_nav .currentTextHolder, div.pp_default .pp_description, .mega-menu a, .newsletter-title, .woocommerce div.product .woocommerce-tabs ul.tabs li a, .pricing-header, .schedule-title, .schedule-point-time, .widget_namaste_popularwidget a, .widget_archive a, .widget_categories a, .widget_nav_menu a, .widget_recent_entries a, .widget_meta a, .widget_pages a, .widget_product_categories a, .organizer-name
+{
+font-family: 'Josefin Sans', sans-serif;}
+
+/* Font 2 */
+
+.post-single-categories a, .details-event li, .schedule-point-title
+{
+font-family: 'Fondamento', cursive;}
+
+/* Font 3 */
+
+body 
+{
+font-family: 'Playfair Display', serif;}
+
+/* PLUGIN FONTS */
+
+/* Font 1 */
+
+input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], textarea, .main-button .btn, .dropcap, .blockquote-1-author, .heading .h, .big-letters, .namaste-map-view .show-title, .namaste-map-contacts .title, .imagebox .name, .iconbox .name, .namaste-tab-holder .nav-tabs, .toggle a, .member-info h3, .progress .fore .name, .namaste-action-call, .namaste-action-call .title, .action-call-item.square.action-call-effect .info p, .book-title, .post-shortcode .entry-title, .home-tags, .post-shortcode .entry-title a, .post-2-content .entry-title, .post-with-frame .post-with-frame-title, .event-titles, .portfolio-filters ul li a, figure.portfolio-effect h2, figure.portfolio-effect p, .namaste-info-shortcode .main-title, .subtext, .date-box-day, .event-box-link, #owl-quote-namaste .quote-author-position, .event-box a, .event-more, .namaste-custom-slider .namaste-slider-caption
+{
+font-family: 'Josefin Sans', sans-serif;}
+
+/* Font 2 */
+
+.category-list, .post-shortcode .post-author, .eventinfos, .heading-2 h1, .heading-2 h2, .heading-2 h3, .heading-2 h4, .heading-2 h5, .heading-2 h6, .post-2-item-holder figure p, .action-call-item .info h3, #owl-quote-namaste .quote-author, .book-author, .price-description, .date-box-month, .event-content-info p, .pro-slider-mandala p
+{
+font-family: 'Fondamento', cursive;}
+
+
+h1 {
+	font-size: 60px;
+}
+h2 {
+	font-size: 45px;
+}
+h3 {
+	font-size: 35px;
+}
+h4 {
+	font-size: 25px;
+}
+h5 {
+	font-size: 20px;
+}
+h6 {
+	font-size: 18px;
+}
+
+</style>
+ 
+
+
+<style type="text/css">
+/* GIVE STYLES */
+
+.give-btn {
+	border: 3px double #e3ae3a;
+	background: #222222;
+	color: #e3ae3a;
+}
+
+.give-btn:hover {
+	border: 3px double #222222;
+	background: #e3ae3a;
+}
+
+.give-wrap {
+	padding: 0;
+}
+
+.give-content-description {
+	border-bottom: 1px solid #e3ae3a;
+    text-align: center;
+	margin-bottom: 50px;
+}
+
+.give-content-description .give-btn {
+    display: block;
+    margin: auto !important;
+}
+
+.give-content-description .give-donation-amount {
+    display: inline-table;
+}
+
+.give-content-description #give-donation-level-button-wrap>li {
+    float: none;
+    display: inline-block;
+}
+
+.give-archive-form {
+    max-width: 550px;
+    margin: auto;
+}
+
+.goal-progress .income {
+	color: inherit;
+}
+
+.give-content-image img {
+	margin: 0;
+}
+
+.give-modal .mfp-content {
+	max-width: 610px;
+}
+
+.progress-bar {
+    width: 100%;
+	margin-bottom: 20px;
+}
+
+.progress-bar>span {
+	border: 1px solid #222222;
+}
+
+.widget_give_forms_widget .goal-progress .income {
+	font-size: 33px;
+	line-height: 33px;
+}
+
+.widget_give_forms_widget .give-form {
+	margin-bottom:0;
+}
+
+[id*=give-form] div.images img {
+    border-radius: 20px;
+}
+
+[id*=give-form].give-display-modal .give-btn {
+	padding: 8px 25px;
+}
+
+.give-item-label {
+  color: #fff; }
+
+.qtip-default {
+  background-color: #fffFA3; }
+
+.qtip-bootstrap {
+  background-color: #fff; }
+
+.qtip-bootstrap .qtip-icon .ui-icon {
+  text-shadow: 0 1px 0 #fff; }
+
+body.give_receipt_page {
+  background-color: #fff; }
+
+form[id*='give-form'] legend, form[id*='give-form'] h3.give-section-break, form[id*='give-form'] h4.give-section-break, #give-recurring-form legend, #give-recurring-form h3.give-section-break, #give-recurring-form h4.give-section-break, form.give-form legend, form.give-form h3.give-section-break, form.give-form h4.give-section-break {
+     border-bottom: none !important; }
+
+
+form[id*='give-form'] .give-donation-amount .give-currency-symbol {
+    background-color: #7C2E00;
+    border-top: 1px solid #7C2E00;
+    border-bottom: 1px solid #7C2E00;
+    color: #e3ae3a; }
+	
+form[id*='give-form'] .give-donation-amount .give-currency-symbol.give-currency-position-before {
+	border-left: 1px solid #7C2E00; }
+	  
+form[id*='give-form'] .give-donation-amount .give-currency-symbol.give-currency-position-after {
+	border-right: 1px solid #7C2E00; }
+	
+form[id*='give-form'] .give-donation-amount #give-amount {
+    border: 1px solid #7C2E00; }
+	
+form[id*='give-form'] .give-donation-amount #give-amount.invalid-amount {
+      border: 1px solid red; }
+	  
+form[id*='give-form'] .give-donation-amount span.give-final-total-amount {
+    border: 1px solid #7C2E00;
+    background: #fff; }
+
+form[id*='give-form'] #give-final-total-wrap .give-donation-total-label {
+    background-color: #7C2E00;
+    color: #e3ae3a;
+    border: 1px solid #7C2E00; }
+	
+form[id*='give-form'] #give-final-total-wrap .give-final-total-amount {
+    border: 1px solid #7C2E00;
+    background-color: #fff;
+    color: #e3ae3a; }
+
+.give_error, .give_success {
+	background: #FFDB8C;
+	color: #222222;
+	border: 1px solid #e3ae3a; }
+.give_error:before, .give_success:before {
+	color: #fff;}
+
+.give_success {
+	border-color: #e3ae3a }
+.give_success:before {
+	background-color: #e3ae3a;
+	color: #7C2E00; }
+
+form[id*='give-form'] select.give-select-level {
+   border: 3px double #e3ae3a; }
+
+.mfp-preloader a:hover {
+	color: #fff; }
+
+.mfp-close {
+  color: #fff; }
+
+.mfp-image-holder .mfp-close,
+.mfp-iframe-holder .mfp-close {
+  color: #fff; }
+
+.mfp-arrow-left:after,
+.mfp-arrow-left .mfp-a {
+	border-right: 17px solid #fff; }
+
+.mfp-arrow-right:after,
+.mfp-arrow-right .mfp-a {
+    border-left: 17px solid #fff; }
+
+.progress-bar {
+	background: #222222;}
+
+form.floated-labels .floatlabel input,
+form.floated-labels .floatlabel select {
+    background-color: #fff;
+    border: 3px double #e3ae3a; }
+form.floated-labels .floatlabel.is-active input,
+form.floated-labels .floatlabel.is-active select,
+form.floated-labels .floatlabel.is-active textarea {
+    background-color: #fff;
+    border: 3px double #e3ae3a; }
+
+.give-modal .mfp-content {
+    background: #fff;
+}
+
+table.give-table {
+	color: #222222;
+	text-shadow: 1px 1px 0px #fff; }
+	
+table.give-table tbody tr td {
+	border-top: 1px solid #fff;
+	background: #fff; }
+	
+</style>
+<style>
+.donation-box {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  padding: 10px;
+  border-radius: 10px;
+</style>

@@ -1,0 +1,19 @@
+ <div class="carousel-iner">
+<?
+        $slider_option_tree = ot_get_option("option_tree_slider");
+           // print_r($slider_option_tree);
+        foreach ($slider_option_tree as $slide) {
+        ?>
+        div class="item <?php echo $active;?>;">
+                        <div class="fill" style="background-image:url('<?php echo $slide["slider_image"]; ?>');"></div>
+                        <div class="carousel-caption">
+                            <h2><?php echo $slide ["title"] ?></h2>
+                        </div>
+                   
+        <?
+        }
+        ?>
+        </div>
+
+
+??????? ???????? ????? option tree

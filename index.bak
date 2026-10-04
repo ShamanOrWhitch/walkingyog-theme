@@ -1,0 +1,359 @@
+<?php
+/* Исправленный front-page.php для walkingyog
+   Замена и оптимизация анимации video -> dissolve -> next video
+   Сделай бэкап оригинала перед заменой: front-page.php.bak
+*/
+get_header();
+?>
+<div id="wy-preloader">
+    <img src="https://walkingyog.com/wp-content/uploads/2025/12/downloader.gif" alt="loading">
+</div>
+
+<div id="video-container" aria-hidden="true">
+    <canvas id="dissolve-canvas"></canvas>
+</div>
+
+<style>
+  /* Базовые стили: упрощены и не конфликтуют с другими частями темы */
+  :root{--bg:#000;--card:rgba(255,255,255,0.06);--muted:#9aa}
+  html,body{height:100%;margin:0;padding:0;background:var(--bg);color:#fff}
+  #video-container{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;height:854px;border-radius:20px;overflow:hidden;box-shadow:0 0 50px rgba(0,255,255,0.12);z-index:5}
+  #dissolve-canvas{display:block;width:100%;height:100%}
+  .site-content{position:relative;z-index:10;margin-top:940px;padding:40px;background:rgba(0,0,0,0.85);min-height:100vh}
+  h1,h2,h4,p{color:#fff !important;text-shadow:0 0 8px #000}
+  .panel{background:var(--card);border:none;border-radius:12px;padding:18px}
+  /* карточка cover и ссылки */
+  .cover { width: 180px; height: 180px; border-radius: 50%; background: url('https://walkingyog.com/wp-content/uploads/2025/10/roothead.gif') center/cover no-repeat; margin: 24px auto 6px; box-shadow: 0 0 30px rgba(255,200,80,0.25); }
+  .links { max-width:420px;margin:14px auto; display:flex;flex-direction:column;gap:10px;align-items:center }
+  .link { width:100%; display:block; text-decoration:none; background:#0b0b0b; color:#fff; padding:12px 16px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.04) }
+  @media(max-width:640px){
+    #video-container{width:320px;height:568px}
+    .site-content{margin-top:700px;padding:18px}
+  }
+<!-- Donation box (динамический) -->
+<a id="donation-box" href="/donatik" aria-label="Donate" style="display:block;">
+  <img id="donate-img" src="https://walkingyog.com/wp-content/uploads/2025/12/Стеклянная-донатная-коробка_2.jpg" alt="Donate">
+  <!-- video элемент скрыт по умолчанию, включаем при hover -->
+  <video id="donate-video" src="https://walkingyog.com/wp-content/uploads/2025/12/video-6.mp4" muted loop playsinline preload="metadata" style="display:none;"></video>
+</a>
+
+
+
+#video-container {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 480px; height: 854px; /* твой 9:16 контейнер — меняй при желании */
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+  z-index: 5;
+  pointer-events: none;
+  background:#000;
+}
+
+/* canvas must fill its container (CSS pixels) */
+#dissolve-canvas, #canvas {
+  display:block;
+  width:100% !important;
+  height:100% !important;
+}
+
+/* native fallback video */
+.wy-fallback-video {
+  width:100% !important;
+  height:100% !important;
+  object-fit: contain !important; /* <- ключевой фикс */
+  display:block;
+}
+
+/* На маленьких экранах подгоняем контейнер */
+@media (max-width: 640px) {
+  #video-container { width: 320px; height: 568px; }
+}
+
+</style>
+
+<?php
+// Подключение библиотек (если у темы нет enqueue — подключаем явно здесь)
+// Если у тебя уже загружены эти скрипты глобально — можно убрать эти теги.
+?>
+<script src="<?php echo esc_url( get_template_directory_uri() ); ?>/js/three.min.js"></script>
+<script src="<?php echo esc_url( get_template_directory_uri() ); ?>/js/gsap.min.js"></script>
+
+<script>
+(function(){
+  // Контент-видео: укажи свои файлы
+  const videos = [
+    "https://walkingyog.com/wp-content/uploads/2025/11/11282-1.mp4",
+    "https://walkingyog.com/wp-content/uploads/2025/11/30Сек43-1.mp4",
+    "https://walkingyog.com/wp-content/uploads/2025/12/1203-9166.mp4",
+    "https://walkingyog.com/wp-content/uploads/2025/11/11271-1.mp4",
+    "https://walkingyog.com/wp-content/uploads/2025/12/12071.mp4"
+    
+  ];
+
+  // --- Сцена Three.js ---
+  const canvas = document.getElementById('dissolve-canvas');
+  // guard
+  if(!canvas) return;
+
+  let renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: true});
+  function setRendererSize(){
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(rect.width, rect.height, false);
+  }
+  setRendererSize();
+  window.addEventListener('resize', setRendererSize);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  camera.position.z = 150;
+
+  // Геометрия: снизил сегменты для производительности
+  const segX = 40, segY = 70;
+ const geo = new THREE.PlaneGeometry(80, 125, segX, segY);
+  const mat = new THREE.MeshBasicMaterial({transparent:true, opacity: 1, side: THREE.DoubleSide});
+  const plane = new THREE.Mesh(geo, mat);
+  scene.add(plane);
+
+  // Сохранение оригинальных позиций для анимации
+  const positionAttr = geo.attributes.position;
+  const origPositions = new Float32Array(positionAttr.count * 3);
+  for(let i=0;i<positionAttr.array.length;i++) origPositions[i] = positionAttr.array[i];
+
+  // Video handling
+  let videoEl = document.createElement('video');
+  videoEl.muted = true;
+  videoEl.playsInline = true;
+  videoEl.crossOrigin = "anonymous";
+  videoEl.loop = true;
+  videoEl.style.display = 'none';
+  document.body.appendChild(videoEl);
+
+  let videoTexture = null;
+  let currentIndex = 0;
+
+  function setVideoSource(index){
+    if(!videos[index]) return;
+    // set src and load
+    videoEl.pause();
+    videoEl.src = videos[index];
+    videoEl.load();
+    videoEl.oncanplay = function(){
+      try{
+        videoEl.play().catch(()=>{ /* autoplay may be blocked */ });
+      }catch(e){}
+      // recreate texture
+      if(videoTexture) { videoTexture.dispose && videoTexture.dispose(); }
+      videoTexture = new THREE.VideoTexture(videoEl);
+      videoTexture.minFilter = THREE.LinearFilter;
+      videoTexture.magFilter = THREE.LinearFilter;
+      videoTexture.format = THREE.RGBFormat;
+      mat.map = videoTexture;
+      mat.needsUpdate = true;
+      currentIndex = index;
+    };
+  }
+
+  // Запуск первого видео (лениво)
+  setVideoSource(0);
+
+  // --- Dissolve animation via lerp between origPositions and random offset ---
+  function createOffsetArray(amplitude){
+    const offsets = new Float32Array(origPositions.length);
+    for(let i=0;i<offsets.length;i++){
+      // random offset, reduce amplitude near center (smooth)
+      offsets[i] = (Math.random() - 0.5) * amplitude;
+    }
+    return offsets;
+  }
+
+  function animateDissolve(duration = 2.4, amplitude = 80, fadeDelay = 1.6){
+    // prepare offsets and animate t from 0..1
+    const offsets = createOffsetArray(amplitude);
+    const state = { t: 0 };
+    // fade out opacity a bit delayed
+    gsap.to(mat, { opacity: 0, delay: fadeDelay, duration: 1.6, ease: "power2.out" });
+
+    gsap.to(state, {
+      t: 1,
+      duration: duration,
+      ease: "power4.out",
+      onUpdate: function(){
+        const t = state.t;
+        // linear interpolation orig -> orig+offsets
+        const pos = positionAttr.array;
+        for(let i=0;i<pos.length;i++){
+          pos[i] = origPositions[i] + offsets[i] * t;
+        }
+        positionAttr.needsUpdate = true;
+      },
+      onComplete: function(){
+        // restore positions back smoothly and reset opacity, then switch video
+        gsap.to(mat, { opacity: 1, duration: 0.8, ease: "power2.inOut" });
+        // restore geometry to original positions smoothly
+        const restore = { r: 0 };
+        gsap.to(restore, {
+          r: 1,
+          duration: 0.9,
+          ease: "power2.inOut",
+          onUpdate: function(){
+            const r = restore.r;
+            const pos = positionAttr.array;
+            for(let i=0;i<pos.length;i++){
+              pos[i] = origPositions[i] + (offsets[i] * (1 - r));
+            }
+            positionAttr.needsUpdate = true;
+          },
+          onComplete: function(){
+            // after complete — change to next video
+            const next = (currentIndex + 1) % videos.length;
+            setVideoSource(next);
+          }
+        });
+      }
+    });
+  }
+
+  // loop rendering
+  (function renderLoop(){
+    requestAnimationFrame(renderLoop);
+    renderer.render(scene, camera);
+    if(videoTexture) videoTexture.needsUpdate = true;
+  })();
+
+  // scheduling dissolves
+  let dissolveTimer = null;
+  function scheduleDissolve(){
+    // first dissolve at ~12s, then spaced
+    setTimeout(function(){
+      animateDissolve();
+      dissolveTimer = setInterval(function(){
+        animateDissolve();
+      }, 45000 + Math.random() * 20000);
+    }, 12000);
+  }
+  scheduleDissolve();
+
+  // expose for debugging / manual next
+  window.wy_next_dissolve = animateDissolve;
+  window.wy_set_video = setVideoSource;
+
+  // --- Trailer button logic: show native <video> element (controls) and play ---
+  window.showTrailer = function(){
+    const trailer = document.getElementById('trailer');
+    if(!trailer) return;
+    trailer.style.display = 'block';
+    trailer.play().catch(()=>{ /* maybe blocked on mobile */ });
+    // scroll to it
+    trailer.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+
+})();
+</script>
+
+<div class="site-content container">
+  <div class="panel text-center">
+    <div class="cover" role="img" aria-label="WalkingYog logo"></div>
+
+    <h1 style="font-size:2.2rem;color:#0ff;margin:8px 0 2px;">
+      ओं मणिपद्मे हूं<br>Om Mani Padme HUM
+    </h1>
+    <h2 style="margin:0 0 10px;color:#9aa">Держи баланс —  by ShamanOrWitch</h2>
+
+    <div class="links">
+      <button class="link" onclick="showTrailer()">🎬 Смотреть трейлер (30 MB)</button>
+     
+      <a class="link" href="https://open.spotify.com/artist/3AhCSHtdfK8fmTBqGXAts1" target="_blank" rel="noopener">🎧 Spotify</a>
+       <a class="link" href="https://soundcloud.com/jah-shaman" target="_blank" rel="noopener">🌊 SoundCloud</a>
+      <a class="link" href="https://www.deezer.com/en/profile/6655306301" target="_blank" rel="noopener">🎶 Deezer</a>
+      <a class="link" href="https://open.anghami.com/rEj690dgfXb" target="_blank" rel="noopener">🎵 Anghami</a>
+      <a class="link" href="https://music.apple.com/il/artist/shamanorwitch/1838926179" target="_blank" rel="noopener"> "A" apple</a>
+      <a class="link" href="https://music.youtube.com/playlist?list=PLdZQQfOk25DkP-m5sFXU-U6u_S3zIyI0w" target="_blank" rel="noopener">🔴 youtube music</a>
+      
+      <a class="link" href="https://www.youtube.com/@WalkingYog" target="_blank" rel="noopener">▶️ YouTube</a>
+      
+      <a class="link" href="https://vk.com/jahshaman" target="_blank" rel="noopener">📀 VK</a>
+      <a class="link" href="https://www.instagram.com/walkingyog/" target="_blank" rel="noopener">📸 Instagram</a>
+      <a class="link" href="https://www.twitch.tv/walkingyog" target="_blank" rel="noopener">👾 Twich</a>
+            <a class="link" href="https://www.tiktok.com/@walking_yog" target="_blank" rel="noopener">🎬 TikTok</a>
+      <a class="link" href="https://x.com/walkingyog" target="_blank" rel="noopener">🐦 X (Twitter)</a>
+      <a class="link" href="https://www.facebook.com/YogWalking" target="_blank" rel="noopener">📘 Facebook</a>
+      <a class="link" href="https://walkingyog.com" target="_blank" rel="noopener">🌐 Official Website</a>
+    </div>
+
+    <video id="trailer" controls preload="none" poster="https://walkingyog.com/wp-content/uploads/2025/10/roothead.gif" style="display:none;max-width:460px;margin:18px auto;border-radius:12px;">
+      <source src="https://walkingyog.com/wp-content/uploads/2025/10/10066.mp4" type="video/mp4">
+      Ваш браузер не поддерживает видео.
+    </video>
+
+  </div>
+
+  <?php
+  // Показ миниатюр записей travel
+  $q = new WP_Query(['post_type'=>'post','category_name'=>'traveling','posts_per_page'=>6]);
+  if ($q->have_posts()): ?>
+    <div style="margin-top:28px;text-align:center"><h2>Путешествуем в</h2></div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px">
+      <?php while($q->have_posts()): $q->the_post(); ?>
+        <div style="width:260px">
+          <a href="<?php the_permalink(); ?>">
+            <?php if (has_post_thumbnail()) the_post_thumbnail('medium', ['style'=>'border-radius:12px;width:100%']); ?>
+            <h3 style="color:#fff;margin:8px 0 0;"><?php the_title(); ?></h3>
+          </a>
+        </div>
+      <?php endwhile; wp_reset_postdata(); ?>
+    </div>
+  <?php endif; ?>
+
+</div>
+<script>
+(function(){
+  const DELAY = 116500; // 120 - 4 сек (как ты хотел)
+  const a = document.createElement('a');
+
+  a.id = 'donation-box';
+  a.href = '/donatik';
+
+  const img = document.createElement('img');
+  img.src = 'https://walkingyog.com/wp-content/uploads/2025/12/Стеклянная-донатная-коробка_1.png';
+
+  const vid = document.createElement('video');
+  vid.src = 'https://walkingyog.com/wp-content/uploads/2025/12/video-6.mp4';
+  vid.muted = true;
+  vid.loop = true;
+  vid.playsInline = true;
+  vid.style.display = 'none';
+
+  a.appendChild(img);
+  a.appendChild(vid);
+  document.body.appendChild(a);
+
+  setTimeout(() => {
+    a.classList.add('show');
+  }, DELAY);
+
+  a.addEventListener('mouseenter', () => {
+    img.style.display = 'none';
+    vid.style.display = 'block';
+    vid.play().catch(()=>{});
+  });
+
+  a.addEventListener('mouseleave', () => {
+    vid.pause();
+    vid.currentTime = 0;
+    vid.style.display = 'none';
+    img.style.display = 'block';
+  });
+
+})();
+</script>
+
+
+
+<?php
+get_footer();
+?>

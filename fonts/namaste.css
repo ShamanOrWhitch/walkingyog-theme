@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Namaste";
+  src: url("namaste.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --font-main: Arial, sans-serif;
+  --font-namaste: "Namaste", Arial, sans-serif;
+}
+
+body { font-family: var(--font-main); }
+
+/* только маленькие латинские */
+.namaste-lower {
+  font-family: var(--font-namaste);
+  text-transform: lowercase;
+}
+
+/* всё остальное — обычным */
+.upper, .cyr { font-family: var(--font-main); }
