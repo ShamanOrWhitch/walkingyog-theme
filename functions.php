@@ -33,27 +33,36 @@ add_action('wp_enqueue_scripts', function () {
     $dir = get_stylesheet_directory();
     $uri = get_stylesheet_directory_uri();
 
-    wp_enqueue_style(
-        'wy-sheet',
-        $uri . '/css/sheet.css',
-        ['core-style'],
-        filemtime($dir . '/css/sheet.css')
-    );
+    $sheet = $dir . '/css/sheet.css';
+    if (file_exists($sheet)) {
+        wp_enqueue_style(
+            'wy-sheet',
+            $uri . '/css/sheet.css',
+            ['core-style'],
+            filemtime($sheet)
+        );
+    }
 
-    wp_enqueue_style(
-        'wy-levels',
-        $uri . '/css/wy-levels.css',
-        ['wy-sheet'],
-        filemtime($dir . '/css/wy-levels.css')
-    );
+    $levels_css = $dir . '/css/wy-levels.css';
+    if (file_exists($levels_css)) {
+        wp_enqueue_style(
+            'wy-levels',
+            $uri . '/css/wy-levels.css',
+            ['core-style'],
+            filemtime($levels_css)
+        );
+    }
 
-    wp_enqueue_script(
-        'wy-levels',
-        $uri . '/js/wyLevels.js',
-        [],
-        filemtime($dir . '/js/wyLevels.js'),
-        true
-    );
+    $levels_js = $dir . '/js/wyLevels.js';
+    if (file_exists($levels_js)) {
+        wp_enqueue_script(
+            'wy-levels',
+            $uri . '/js/wyLevels.js',
+            [],
+            filemtime($levels_js),
+            true
+        );
+    }
 
 });
 add_action('wp_enqueue_scripts', function () {
