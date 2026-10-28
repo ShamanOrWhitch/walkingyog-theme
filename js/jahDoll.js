@@ -1,6 +1,6 @@
-/* Jah Tales — ragdoll на всю сцену.
-   Холст не перехватывает клики: сцена в capture сама решает,
-   попали в фигурку или в кнопку/превью. Руки прилипают к #sidePanel. */
+/* Jah Tales — ragdoll на всё окно, не только на плеер.
+   Холст не перехватывает клики. Руки и ноги липнут к .thumb и [data-stick],
+   даже если ячейка лежит вне старого .jah-stage. Якорь едет за ячейкой. */
 (function () {
   function boot() {
     if (typeof p2 === "undefined") return;
@@ -8,11 +8,16 @@
     if (!canvas || canvas.dataset.jahReady === "1") return;
     canvas.dataset.jahReady = "1";
     var ctx = canvas.getContext("2d");
-    var stage = canvas.closest(".jah-stage") || canvas.parentElement || document.body;
-    var panel = document.getElementById("sidePanel");
 
-    canvas.style.touchAction = "none";
+    canvas.style.position = "fixed";
+    canvas.style.left = "0";
+    canvas.style.top = "0";
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.zIndex = "60";
     canvas.style.pointerEvents = "none";
+    canvas.style.touchAction = "none";
+    canvas.style.background = "transparent";
 
     var world = new p2.World({ gravity: [0, -12] });
     if (p2.World.NO_SLEEPING != null) world.sleepMode = p2.World.NO_SLEEPING;
@@ -23,11 +28,9 @@
 
     var SCALE = 110;
     function fit() {
-      var r = stage.getBoundingClientRect();
-      if (r.width < 2 || r.height < 2) return;
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var w = Math.max(2, Math.round(r.width * dpr));
-      var h = Math.max(2, Math.round(r.height * dpr));
+      var w = Math.max(2, Math.round(window.innerWidth * dpr));
+      var h = Math.max(2, Math.round(window.innerHeight * dpr));
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -77,6 +80,10 @@
     lArm.addShape(new p2.Box({ width: 0.22, height: 0.85 }));
     var rArm = addBody(new p2.Body({ mass: 0.8, position: [0.7, 1.9] }));
     rArm.addShape(new p2.Box({ width: 0.22, height: 0.85 }));
+    var lLeg = addBody(new p2.Body({ mass: 0.9, position: [-0.18, 0.85] }));
+    lLeg.addShape(new p2.Box({ width: 0.2, height: 0.82 }));
+    var rLeg = addBody(new p2.Body({ mass: 0.9, position: [0.18, 0.85] }));
+    rLeg.addShape(new p2.Box({ width: 0.2, height: 0.82 }));
 
     world.addConstraint(new p2.RevoluteConstraint(head, torso, {
       localPivotA: [0, -0.34],
@@ -90,16 +97,31 @@
       localPivotA: [0, 0.38],
       localPivotB: [0.32, 0.28]
     }));
+    world.addConstraint(new p2.RevoluteConstraint(lLeg, torso, {
+      localPivotA: [0, 0.36],
+      localPivotB: [-0.16, -0.42]
+    }));
+    world.addConstraint(new p2.RevoluteConstraint(rLeg, torso, {
+      localPivotA: [0, 0.36],
+      localPivotB: [0.16, -0.42]
+    }));
+
+    var limbs = [
+      { key: "lh", body: lArm },
+      { key: "rh", body: rArm },
+      { key: "lf", body: lLeg },
+      { key: "rf", body: rLeg }
+    ];
 
     var placed = false;
     function spawnOverVideo() {
       fit();
       var wrap = document.getElementById("jahWrap");
-      if (!wrap || canvas.width < 2) return;
-      var wr = wrap.getBoundingClientRect();
-      var p = clientToWorld(wr.right - 110, wr.bottom - 160);
+      var anchor = wrap || document.body;
+      var wr = anchor.getBoundingClientRect();
+      var p = clientToWorld(wr.left + wr.width * 0.72, wr.top + wr.height * 0.62);
       torso.position[0] = p[0];
-      torso.position[1] = Math.max(1.6, p[1]);
+      torso.position[1] = Math.max(1.8, p[1]);
       torso.velocity[0] = torso.velocity[1] = 0;
       torso.angle = 0;
       head.position[0] = torso.position[0];
@@ -111,6 +133,12 @@
       rArm.position[0] = torso.position[0] + 0.72;
       rArm.position[1] = torso.position[1] + 0.15;
       rArm.angle = -0.4;
+      lLeg.position[0] = torso.position[0] - 0.18;
+      lLeg.position[1] = torso.position[1] - 0.85;
+      lLeg.angle = 0.05;
+      rLeg.position[0] = torso.position[0] + 0.18;
+      rLeg.position[1] = torso.position[1] - 0.85;
+      rLeg.angle = -0.05;
       placed = true;
     }
     requestAnimationFrame(spawnOverVideo);
@@ -123,8 +151,7 @@
     var mouseJoint = null;
     var dragged = null;
     var aim = null;
-    var sticks = { l: null, r: null };
-    var anchors = { l: null, r: null };
+    var sticks = {};
 
     function pick(worldPoint) {
       var hits = world.hitTest(worldPoint, bodies);
@@ -145,45 +172,77 @@
       return best;
     }
 
-    function handPoint(arm) {
-      var localY = -arm.shapes[0].height / 2;
-      var c = Math.cos(arm.angle);
-      var s = Math.sin(arm.angle);
-      return [arm.position[0] - s * localY, arm.position[1] + c * localY];
+    function tip(body) {
+      var localY = -body.shapes[0].height / 2;
+      if (!body.shapes[0].height) localY = -(body.shapes[0].radius || 0.2);
+      var c = Math.cos(body.angle);
+      var s = Math.sin(body.angle);
+      return [body.position[0] - s * localY, body.position[1] + c * localY];
     }
 
-    function overPanel(wpt) {
-      if (!panel) return false;
+    function stickElements() {
+      return Array.prototype.slice.call(document.querySelectorAll(".thumb, [data-stick]"));
+    }
+
+    function elementAt(wpt) {
       var c = worldToClient(wpt);
-      var r = panel.getBoundingClientRect();
-      var pad = 28;
-      return c.x >= r.left - pad && c.x <= r.right + pad && c.y >= r.top - pad && c.y <= r.bottom + pad;
+      var list = stickElements();
+      var found = null;
+      for (var i = 0; i < list.length; i++) {
+        var el = list[i];
+        if (el.offsetParent === null && el.getClientRects().length === 0) continue;
+        var r = el.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) continue;
+        if (c.x >= r.left && c.x <= r.right && c.y >= r.top && c.y <= r.bottom) found = el;
+      }
+      return found;
+    }
+
+    function elementCenterWorld(el) {
+      var r = el.getBoundingClientRect();
+      return clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
     }
 
     function releaseStick(key) {
-      if (!sticks[key]) return;
-      world.removeConstraint(sticks[key]);
-      world.removeBody(anchors[key]);
-      sticks[key] = null;
-      anchors[key] = null;
+      var s = sticks[key];
+      if (!s) return;
+      world.removeConstraint(s.constraint);
+      world.removeBody(s.anchor);
+      delete sticks[key];
     }
 
-    function stickHand(arm, key) {
-      if (sticks[key] || dragged === arm) return;
-      var p = handPoint(arm);
-      if (!overPanel(p)) return;
-      var anchor = new p2.Body({ mass: 0, position: [p[0], p[1]] });
+    function stickLimb(limb, key) {
+      if (sticks[key] || dragged === limb) return;
+      var p = tip(limb);
+      var el = elementAt(p);
+      if (!el) return;
+      var center = elementCenterWorld(el);
+      var anchor = new p2.Body({ mass: 0, position: [center[0], center[1]] });
       world.addBody(anchor);
-      var c = new p2.RevoluteConstraint(anchor, arm, {
-        worldPivot: [p[0], p[1]],
-        collideConnected: false,
-        maxForce: 900
+      var c = new p2.RevoluteConstraint(anchor, limb, {
+        worldPivot: [center[0], center[1]],
+        collideConnected: false
       });
-      c.maxForce = 900;
+      if (c.maxForce != null) c.maxForce = 1200;
       world.addConstraint(c);
-      sticks[key] = c;
-      anchors[key] = anchor;
-      arm.angularVelocity = 0;
+      sticks[key] = { constraint: c, anchor: anchor, el: el };
+      limb.angularVelocity = 0;
+    }
+
+    function syncSticks() {
+      Object.keys(sticks).forEach(function (key) {
+        var s = sticks[key];
+        var r = s.el.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) {
+          releaseStick(key);
+          return;
+        }
+        var w = elementCenterWorld(s.el);
+        s.anchor.position[0] = w[0];
+        s.anchor.position[1] = w[1];
+        s.anchor.velocity[0] = 0;
+        s.anchor.velocity[1] = 0;
+      });
     }
 
     function drop() {
@@ -194,15 +253,17 @@
       }
       dragged = null;
       aim = null;
-      stage.style.cursor = "";
-      if (was === lArm) stickHand(lArm, "l");
-      if (was === rArm) stickHand(rArm, "r");
+      document.documentElement.style.cursor = "";
+      limbs.forEach(function (limb) {
+        if (was === limb.body) stickLimb(limb.body, limb.key);
+      });
     }
 
     function startDrag(e, b) {
       var p = clientToWorld(e.clientX, e.clientY);
-      if (b === lArm) releaseStick("l");
-      if (b === rArm) releaseStick("r");
+      limbs.forEach(function (limb) {
+        if (b === limb.body) releaseStick(limb.key);
+      });
       e.preventDefault();
       e.stopPropagation();
       if (mouseJoint) world.removeConstraint(mouseJoint);
@@ -213,18 +274,21 @@
       if (b.wakeUp) b.wakeUp();
       mouseJoint = new p2.RevoluteConstraint(mouseBody, b, {
         worldPivot: [p[0], p[1]],
-        collideConnected: false,
-        maxForce: 1e6
+        collideConnected: false
       });
-      mouseJoint.maxForce = 1e6;
+      if (mouseJoint.maxForce != null) mouseJoint.maxForce = 1e6;
       world.addConstraint(mouseJoint);
       dragged = b;
       aim = p;
-      stage.style.cursor = "grabbing";
+      document.documentElement.style.cursor = "grabbing";
     }
 
-    stage.addEventListener("pointerdown", function (e) {
+    window.addEventListener("pointerdown", function (e) {
       if (!placed) spawnOverVideo();
+      if (e.target && e.target.closest && e.target.closest("a, button, input, textarea, select, video")) {
+        var probe = pick(clientToWorld(e.clientX, e.clientY));
+        if (!probe) return;
+      }
       var b = pick(clientToWorld(e.clientX, e.clientY));
       if (!b) return;
       startDrag(e, b);
@@ -237,20 +301,11 @@
         return;
       }
       var b = pick(clientToWorld(e.clientX, e.clientY));
-      if (b) stage.style.cursor = "grab";
-      else if (stage.style.cursor === "grab") stage.style.cursor = "";
+      document.documentElement.style.cursor = b ? "grab" : "";
     }, { passive: false });
 
     window.addEventListener("pointerup", function () {
       if (!mouseJoint) return;
-      var arm = dragged;
-      var key = arm === lArm ? "l" : arm === rArm ? "r" : null;
-      if (key && anchors[key]) {
-        var hp = handPoint(arm);
-        var dx = hp[0] - anchors[key].position[0];
-        var dy = hp[1] - anchors[key].position[1];
-        if (Math.sqrt(dx * dx + dy * dy) > 1.15) releaseStick(key);
-      }
       drop();
     });
     window.addEventListener("pointercancel", function () { if (mouseJoint) drop(); });
@@ -270,11 +325,11 @@
       ctx.fillRect(-s.width * SCALE / 2, -s.height * SCALE / 2, s.width * SCALE, s.height * SCALE);
       ctx.restore();
     }
-    function drawHand(arm, stuck) {
-      var p = physToPx(handPoint(arm));
+    function drawTip(body, stuck, color) {
+      var p = physToPx(tip(body));
       ctx.beginPath();
       ctx.arc(p[0], p[1], (stuck ? 0.16 : 0.12) * SCALE, 0, Math.PI * 2);
-      ctx.fillStyle = stuck ? "#ffffff" : "#7fffff";
+      ctx.fillStyle = stuck ? "#ffffff" : color;
       ctx.fill();
       ctx.fillStyle = "#00ffff";
     }
@@ -287,21 +342,27 @@
         mouseBody.position[1] = aim[1];
         mouseBody.velocity[0] = 0;
         mouseBody.velocity[1] = 0;
-        if (dragged === lArm && anchors.l) {
-          var hl = handPoint(lArm);
-          if (Math.hypot(hl[0] - anchors.l.position[0], hl[1] - anchors.l.position[1]) > 1.15) releaseStick("l");
-        }
-        if (dragged === rArm && anchors.r) {
-          var hr = handPoint(rArm);
-          if (Math.hypot(hr[0] - anchors.r.position[0], hr[1] - anchors.r.position[1]) > 1.15) releaseStick("r");
-        }
+        limbs.forEach(function (limb) {
+          if (dragged === limb.body && sticks[limb.key]) {
+            var hp = tip(limb.body);
+            var a = sticks[limb.key].anchor.position;
+            if (Math.hypot(hp[0] - a[0], hp[1] - a[1]) > 1.35) releaseStick(limb.key);
+          }
+        });
       }
-      if (!sticks.l && dragged !== lArm && overPanel(handPoint(lArm))) stickHand(lArm, "l");
-      if (!sticks.r && dragged !== rArm && overPanel(handPoint(rArm))) stickHand(rArm, "r");
+      limbs.forEach(function (limb) {
+        if (!sticks[limb.key] && dragged !== limb.body && elementAt(tip(limb.body))) {
+          stickLimb(limb.body, limb.key);
+        }
+      });
+      syncSticks();
 
       if (dragged !== torso) torso.angularVelocity += (energy - 0.5) * 0.04;
-      if (dragged !== lArm && !sticks.l) lArm.angularVelocity += Math.sin(Date.now() * 0.005) * energy * 0.08;
-      if (dragged !== rArm && !sticks.r) rArm.angularVelocity -= Math.sin(Date.now() * 0.005) * energy * 0.08;
+      limbs.forEach(function (limb, i) {
+        if (dragged === limb.body || sticks[limb.key]) return;
+        var sign = i % 2 === 0 ? 1 : -1;
+        limb.body.angularVelocity += Math.sin(Date.now() * 0.005 + i) * energy * 0.08 * sign;
+      });
 
       world.step(1 / 60);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -310,8 +371,12 @@
       drawBox(torso);
       drawBox(lArm);
       drawBox(rArm);
-      drawHand(lArm, !!sticks.l);
-      drawHand(rArm, !!sticks.r);
+      drawBox(lLeg);
+      drawBox(rLeg);
+      drawTip(lArm, !!sticks.lh, "#7fffff");
+      drawTip(rArm, !!sticks.rh, "#7fffff");
+      drawTip(lLeg, !!sticks.lf, "#b8fff0");
+      drawTip(rLeg, !!sticks.rf, "#b8fff0");
       requestAnimationFrame(loop);
     }
     loop();
@@ -319,9 +384,7 @@
     window.jahDoll = {
       pick: pick,
       clientToWorld: clientToWorld,
-      handPoint: handPoint,
       bodies: bodies,
-      arms: { l: lArm, r: rArm },
       isDragging: function () { return draggingFlag; },
       isStuck: function (key) { return !!sticks[key]; }
     };

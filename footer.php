@@ -5,6 +5,7 @@
  */
 ?>
     </main><!-- /main -->
+    </div><!-- /.container -->
 
     <footer class="site-footer" style="padding:25px;text-align:center;background:#0a0a0a;color:#ccc;">
         <p>© <?php echo date('Y'); ?> Walking Yog</p>
@@ -17,11 +18,12 @@
     ?>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    var p = document.getElementById("wy-preloader");
+    if (!p) return;
     setTimeout(() => {
-        const p = document.getElementById("wy-preloader");
         p.classList.add("hide");
         setTimeout(() => p.remove(), 1200);
-    }, 2000); // прелоадер висит 2 сек
+    }, 2000);
 });
 </script>
 <!-- jQuery -->

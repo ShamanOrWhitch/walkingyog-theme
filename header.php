@@ -41,6 +41,21 @@
         body {margin:0; background:#000; color:#0ff; font-family:Arial; overflow-x:hidden;}
         .navbar-inverse {background:rgba(0,0,0,0.8)!important; border:none;}
         .container {padding-top:80px;}
+        .cover.wya-menu-host {
+            width: min(960px, 100%) !important;
+            height: min(68vh, 620px) !important;
+            min-height: 420px !important;
+            border-radius: 18px !important;
+            overflow: hidden !important;
+            margin: 12px auto 20px !important;
+            position: relative !important;
+            background: transparent !important;
+        }
+        .site-content .links,
+        .site-content .link {
+            position: relative;
+            z-index: 8;
+        }
     </style>
     
     <script>
@@ -51,3 +66,4 @@
 <body <?php body_class(); ?>>
 
 <div class="container">
+<main id="site-main">

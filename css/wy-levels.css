@@ -1,0 +1,40 @@
+.wy-levels {
+  position: relative;
+  height: calc(100vh - 80px);
+  min-height: 420px;
+  overflow: hidden;
+  outline: none;
+}
+.wy-cell {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 28px 6vw 72px;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(28px);
+  pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
+}
+.wy-cell.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.wy-cell__title {
+  margin: 0 0 12px;
+  color: #fff;
+}
+.wy-cell__body {
+  color: #e8eef2;
+}
+.wy-levels__hint {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  z-index: 2;
+  color: #9ad;
+  font-size: 12px;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
