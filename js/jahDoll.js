@@ -1,6 +1,6 @@
-/* Jah Tales — ragdoll на всё окно, не только на плеер.
-   Холст не перехватывает клики. Руки и ноги липнут к .thumb и [data-stick],
-   даже если ячейка лежит вне старого .jah-stage. Якорь едет за ячейкой. */
+/* Jah Tales — ragdoll на всё окно.
+   Липнет к .thumb, [data-stick] и к самой поверхности video/плеера,
+   в точку касания. Сильный рывок отрывает. Клик по точке прилипания отпускает. */
 (function () {
   function boot() {
     if (typeof p2 === "undefined") return;
@@ -152,6 +152,7 @@
     var dragged = null;
     var aim = null;
     var sticks = {};
+    var ignore = {};
 
     function pick(worldPoint) {
       var hits = world.hitTest(worldPoint, bodies);
@@ -181,33 +182,50 @@
     }
 
     function stickElements() {
-      return Array.prototype.slice.call(document.querySelectorAll(".thumb, [data-stick]"));
+      return Array.prototype.slice.call(document.querySelectorAll(
+        ".thumb, [data-stick], video, .jah-stage, #jahWrap, .jah-wrap, .wp-video, .mejs-container, .video-js"
+      ));
     }
 
     function elementAt(wpt) {
       var c = worldToClient(wpt);
       var list = stickElements();
       var found = null;
+      var foundArea = Infinity;
       for (var i = 0; i < list.length; i++) {
         var el = list[i];
         if (el.offsetParent === null && el.getClientRects().length === 0) continue;
         var r = el.getBoundingClientRect();
         if (r.width < 8 || r.height < 8) continue;
-        if (c.x >= r.left && c.x <= r.right && c.y >= r.top && c.y <= r.bottom) found = el;
+        if (c.x < r.left || c.x > r.right || c.y < r.top || c.y > r.bottom) continue;
+        var area = r.width * r.height;
+        if (area < foundArea) {
+          found = el;
+          foundArea = area;
+        }
       }
       return found;
     }
 
-    function elementCenterWorld(el) {
+    function pointOnElement(el, relX, relY) {
       var r = el.getBoundingClientRect();
-      return clientToWorld(r.left + r.width / 2, r.top + r.height / 2);
+      return clientToWorld(r.left + r.width * relX, r.top + r.height * relY);
     }
 
-    function releaseStick(key) {
+    function relOnElement(el, wpt) {
+      var r = el.getBoundingClientRect();
+      var c = worldToClient(wpt);
+      var rx = r.width ? (c.x - r.left) / r.width : 0.5;
+      var ry = r.height ? (c.y - r.top) / r.height : 0.5;
+      return [Math.max(0.04, Math.min(0.96, rx)), Math.max(0.04, Math.min(0.96, ry))];
+    }
+
+    function releaseStick(key, hold) {
       var s = sticks[key];
       if (!s) return;
       world.removeConstraint(s.constraint);
       world.removeBody(s.anchor);
+      if (hold) ignore[key] = s.el;
       delete sticks[key];
     }
 
@@ -215,34 +233,55 @@
       if (sticks[key] || dragged === limb) return;
       var p = tip(limb);
       var el = elementAt(p);
-      if (!el) return;
-      var center = elementCenterWorld(el);
-      var anchor = new p2.Body({ mass: 0, position: [center[0], center[1]] });
+      if (!el || ignore[key] === el) return;
+      var rel = relOnElement(el, p);
+      var at = pointOnElement(el, rel[0], rel[1]);
+      var anchor = new p2.Body({ mass: 0, position: [at[0], at[1]] });
       world.addBody(anchor);
       var c = new p2.RevoluteConstraint(anchor, limb, {
-        worldPivot: [center[0], center[1]],
+        worldPivot: [at[0], at[1]],
         collideConnected: false
       });
-      if (c.maxForce != null) c.maxForce = 1200;
+      if (c.maxForce != null) c.maxForce = 520;
       world.addConstraint(c);
-      sticks[key] = { constraint: c, anchor: anchor, el: el };
+      sticks[key] = { constraint: c, anchor: anchor, el: el, relX: rel[0], relY: rel[1] };
       limb.angularVelocity = 0;
     }
 
     function syncSticks() {
       Object.keys(sticks).forEach(function (key) {
         var s = sticks[key];
-        var r = s.el.getBoundingClientRect();
-        if (r.width < 8 || r.height < 8) {
-          releaseStick(key);
+        if (!s.el || !s.el.isConnected) {
+          releaseStick(key, false);
           return;
         }
-        var w = elementCenterWorld(s.el);
+        var r = s.el.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) {
+          releaseStick(key, false);
+          return;
+        }
+        var w = pointOnElement(s.el, s.relX, s.relY);
         s.anchor.position[0] = w[0];
         s.anchor.position[1] = w[1];
         s.anchor.velocity[0] = 0;
         s.anchor.velocity[1] = 0;
       });
+    }
+
+    function tipKeyAt(clientX, clientY) {
+      var keys = ["lh", "rh", "lf", "rf"];
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (!sticks[key]) continue;
+        var limb = null;
+        for (var j = 0; j < limbs.length; j++) if (limbs[j].key === key) limb = limbs[j];
+        if (!limb) continue;
+        var c = worldToClient(tip(limb.body));
+        var dx = c.x - clientX;
+        var dy = c.y - clientY;
+        if (dx * dx + dy * dy < 28 * 28) return key;
+      }
+      return null;
     }
 
     function drop() {
@@ -259,11 +298,22 @@
       });
     }
 
+    function breakIfFar() {
+      if (!aim) return;
+      limbs.forEach(function (limb) {
+        var s = sticks[limb.key];
+        if (!s) return;
+        var a = s.anchor.position;
+        var hp = tip(limb.body);
+        var stretched = Math.hypot(hp[0] - a[0], hp[1] - a[1]);
+        var fromHand = dragged === limb.body ? Math.hypot(aim[0] - a[0], aim[1] - a[1]) : 0;
+        var fromBody = dragged && dragged !== limb.body ? Math.hypot(aim[0] - a[0], aim[1] - a[1]) : 0;
+        if (stretched > 1.7 || fromHand > 2.05 || fromBody > 3.1) releaseStick(limb.key, true);
+      });
+    }
+
     function startDrag(e, b) {
       var p = clientToWorld(e.clientX, e.clientY);
-      limbs.forEach(function (limb) {
-        if (b === limb.body) releaseStick(limb.key);
-      });
       e.preventDefault();
       e.stopPropagation();
       if (mouseJoint) world.removeConstraint(mouseJoint);
@@ -285,6 +335,13 @@
 
     window.addEventListener("pointerdown", function (e) {
       if (!placed) spawnOverVideo();
+      var tipKey = tipKeyAt(e.clientX, e.clientY);
+      if (tipKey) {
+        releaseStick(tipKey, true);
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       if (e.target && e.target.closest && e.target.closest("a, button, input, textarea, select, video")) {
         var probe = pick(clientToWorld(e.clientX, e.clientY));
         if (!probe) return;
@@ -342,16 +399,12 @@
         mouseBody.position[1] = aim[1];
         mouseBody.velocity[0] = 0;
         mouseBody.velocity[1] = 0;
-        limbs.forEach(function (limb) {
-          if (dragged === limb.body && sticks[limb.key]) {
-            var hp = tip(limb.body);
-            var a = sticks[limb.key].anchor.position;
-            if (Math.hypot(hp[0] - a[0], hp[1] - a[1]) > 1.35) releaseStick(limb.key);
-          }
-        });
+        breakIfFar();
       }
       limbs.forEach(function (limb) {
-        if (!sticks[limb.key] && dragged !== limb.body && elementAt(tip(limb.body))) {
+        var over = elementAt(tip(limb.body));
+        if (ignore[limb.key] && over !== ignore[limb.key]) delete ignore[limb.key];
+        if (!sticks[limb.key] && dragged !== limb.body && over) {
           stickLimb(limb.body, limb.key);
         }
       });
